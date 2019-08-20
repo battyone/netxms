@@ -21,7 +21,7 @@ public class MainWindow extends ApplicationWindow
       super(parentShell);
       addStatusLine();
       addCoolBar(SWT.HORIZONTAL | SWT.FLAT);
-      getCoolBarManager().add(item);
+     // getCoolBarManager().add(item);
    }
 
    @Override
@@ -31,6 +31,4 @@ public class MainWindow extends ApplicationWindow
       shell.setText("NetXMS Management Console");
       shell.setMaximized(true);
    }
-   
-   
 }
