@@ -4,6 +4,7 @@
 package org.netxms.nxmc;
 
 import org.eclipse.swt.widgets.Display;
+import org.netxms.nxmc.base.windows.MainWindow;
 
 /**
  * @author victor
