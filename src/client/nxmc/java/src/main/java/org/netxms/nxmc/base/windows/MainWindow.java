@@ -18,28 +18,33 @@
  */
 package org.netxms.nxmc.base.windows;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.netxms.nxmc.PreferenceStore;
 import org.netxms.nxmc.Registry;
 import org.netxms.nxmc.base.views.Perspective;
+import org.netxms.nxmc.base.widgets.FlatButton;
+import org.netxms.nxmc.resources.ThemeEngine;
 
 /**
- * @author victor
- *
+ * Main window
  */
 public class MainWindow extends ApplicationWindow
 {
+   private Composite windowContent;
+   private Composite topMenu;
    private Composite perspectiveArea;
-   private ToolBarManager perspectiveSwitcher;
    private Perspective currentPerspective;
 
    /**
@@ -49,10 +54,6 @@ public class MainWindow extends ApplicationWindow
    {
       super(parentShell);
       addStatusLine();
-
-      addCoolBar(SWT.HORIZONTAL | SWT.FLAT);
-      setupPerspectiveSwitcher();
-      getCoolBarManager().setLockLayout(true);
    }
 
    /**
@@ -87,9 +88,31 @@ public class MainWindow extends ApplicationWindow
    @Override
    protected Control createContents(Composite parent)
    {
-      perspectiveArea = new Composite(parent, SWT.NONE);
+      windowContent = new Composite(parent, SWT.NONE);
+
+      GridLayout layout = new GridLayout();
+      layout.marginWidth = 0;
+      layout.marginHeight = 0;
+      windowContent.setLayout(layout);
+
+      topMenu = new Composite(windowContent, SWT.NONE);
+      topMenu.setBackground(ThemeEngine.getBackgroundColor("TopMenu"));
+      GridData gd = new GridData();
+      gd.grabExcessHorizontalSpace = true;
+      gd.horizontalAlignment = SWT.FILL;
+      topMenu.setLayoutData(gd);
+      topMenu.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+      perspectiveArea = new Composite(windowContent, SWT.NONE);
       perspectiveArea.setLayout(new FillLayout());
-      return perspectiveArea;
+      gd = new GridData();
+      gd.grabExcessHorizontalSpace = true;
+      gd.horizontalAlignment = SWT.FILL;
+      perspectiveArea.setLayoutData(gd);
+
+      setupPerspectiveSwitcher();
+
+      return windowContent;
    }
 
    /**
@@ -97,11 +120,24 @@ public class MainWindow extends ApplicationWindow
     */
    private void setupPerspectiveSwitcher()
    {
-      perspectiveSwitcher = new ToolBarManager();
+      Font font = ThemeEngine.getFont("TopMenu");
+      Color background = ThemeEngine.getBackgroundColor("TopMenu");
+      Color foreground = ThemeEngine.getForegroundColor("TopMenu");
+
+      FlatButton appMenu = new FlatButton(topMenu, SWT.NONE);
+      appMenu.setText("\u2630");
+      appMenu.setFont(font);
+      appMenu.setBackground(background);
+      appMenu.setForeground(foreground);
 
       for(final Perspective p : Registry.getInstance().getPerspectives())
       {
-         perspectiveSwitcher.add(new Action(p.getName()) {
+         FlatButton button = new FlatButton(topMenu, SWT.NONE);
+         button.setText(p.getName());
+         button.setFont(font);
+         button.setBackground(background);
+         button.setForeground(foreground);
+         button.setAction(new Runnable() {
             @Override
             public void run()
             {
@@ -109,8 +145,6 @@ public class MainWindow extends ApplicationWindow
             }
          });
       }
-
-      getCoolBarManager().add(perspectiveSwitcher);
    }
    
    /**

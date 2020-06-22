@@ -27,6 +27,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Font tools
@@ -34,21 +36,22 @@ import org.eclipse.swt.widgets.Display;
 public class FontTools
 {
    private static final String[] TITLE_FONTS = { "Segoe UI", "Liberation Sans", "DejaVu Sans", "Verdana", "Arial" };
-   
+
+   private static Logger logger = LoggerFactory.getLogger(FontTools.class);
    private static Set<String> availableFonts = null;
    private static Map<String, Font> fontCache = new HashMap<String, Font>();  
-   
-   
+
    /**
     * Find first available font from given list
     * 
-    * @param names
-    * @return
+    * @param names list of font names
+    * @return select font name or null if none can be found
     */
    public static String findFirstAvailableFont(String[] names)
    {
       if (availableFonts == null)
       {
+         logger.debug("Loading list of available fonts");
          availableFonts = new HashSet<String>();
          FontData[] fonts = Display.getCurrent().getFontList(null, true);
          for(FontData fd : fonts)
@@ -59,16 +62,19 @@ public class FontTools
 
       for(String name : names)
       {
-         if (availableFonts.contains(name.toUpperCase()))
+         if (availableFonts.contains(name.trim().toUpperCase()))
+         {
+            logger.debug("Selected font " + name);
             return name;
+         }
       }
       return null;
    }
 
    /**
-    * Get first available font from given list with adjusted height. Fonts will be created as needed
-    * and cached within font tools class.
-    * 
+    * Get first available font from given list with adjusted height. Fonts will be created as needed and cached within font tools
+    * class.
+    *
     * @param names possible font names
     * @param heightAdjustment height adjustment
     * @param style font style
@@ -121,10 +127,10 @@ public class FontTools
       }
       return fonts;
    }
-   
+
    /**
     * Create first available font from given list with adjusted height
-    * 
+    *
     * @param names possible font names
     * @param heightAdjustment height adjustment
     * @param style font style

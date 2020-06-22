@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.netxms.nxmc.tools.ColorCache;
 import org.netxms.nxmc.tools.FontCache;
+import org.netxms.nxmc.tools.FontTools;
 
 /**
  * Theme manager
@@ -240,6 +241,7 @@ public class ThemeEngine
       elements.put("Status.Testing", new ThemeElement(null, new RGB(255, 128, 255)));
       elements.put("StatusMap.Text", new ThemeElement(null, new RGB(0, 0, 0)));
       elements.put("TextInput.Error", new ThemeElement(new RGB(255, 0, 0), null));
+      elements.put("TopMenu", new ThemeElement(new RGB(0, 54, 77), new RGB(240, 240, 240), "Metropolis Medium,Segoe UI,Liberation Sans,Verdana,Helvetica", 22));
    }
 
    /**
@@ -256,7 +258,7 @@ public class ThemeEngine
       {
          this.background = background;
          this.foreground = foreground;
-         this.fontName = fontName;
+         this.fontName = (fontName != null) ? FontTools.findFirstAvailableFont(fontName.split(",")) : null;
          this.fontHeight = fontHeight;
       }
 
