@@ -57,8 +57,8 @@ import org.netxms.nxmc.base.widgets.LabeledText;
 import org.netxms.nxmc.base.widgets.SortableTableViewer;
 import org.netxms.nxmc.base.widgets.SortableTreeViewer;
 import org.netxms.nxmc.localization.LocalizationHelper;
-import org.netxms.nxmc.resources.SharedColors;
 import org.netxms.nxmc.resources.SharedIcons;
+import org.netxms.nxmc.resources.ThemeEngine;
 
 /**
  * Utility class for simplified creation of widgets
@@ -874,7 +874,7 @@ public class WidgetHelper
 			return true;	// Ignore validation for disabled controls
 		
 		boolean ok = validator.validate(text);
-		control.setBackground(ok ? null : SharedColors.getColor(SharedColors.ERROR_BACKGROUND, control.getDisplay()));
+      control.setBackground(ok ? null : ThemeEngine.getBackgroundColor("TextInput.Error"));
 		if (ok)
 		{
 			if (page != null)
