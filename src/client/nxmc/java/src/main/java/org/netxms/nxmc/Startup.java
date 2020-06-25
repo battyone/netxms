@@ -71,6 +71,7 @@ public class Startup
       {
          stateDir.mkdir();
       }
+      Registry.getInstance().setStateDir(stateDir);
 
       logger.info("NetXMS Management Console version " + VersionInfo.version() + " starting");
       logger.info("State directory: " + stateDir.getAbsolutePath());
@@ -88,6 +89,7 @@ public class Startup
       doLogin(Display.getCurrent(), args);
 
       MainWindow w = new MainWindow(null);
+      Registry.getInstance().setMainWindow(w);
       w.setBlockOnOpen(true);
       w.open();
       Display.getCurrent().dispose();

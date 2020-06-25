@@ -24,7 +24,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ColumnViewer;
@@ -53,6 +52,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.netxms.nxmc.PreferenceStore;
 import org.netxms.nxmc.base.widgets.LabeledText;
 import org.netxms.nxmc.base.widgets.SortableTableViewer;
 import org.netxms.nxmc.base.widgets.SortableTreeViewer;
@@ -390,7 +390,7 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void saveColumnSettings(Table table, IDialogSettings settings, String prefix)
+   public static void saveColumnSettings(Table table, PreferenceStore settings, String prefix)
 	{
 		TableColumn[] columns = table.getColumns();
 		for(int i = 0; i < columns.length; i++)
@@ -404,7 +404,7 @@ public class WidgetHelper
             // Attempt workaround for Linux issue when last table column grows by few pixels on each open
             try
             {
-               int oldWidth = settings.getInt(prefix + "." + id + ".width");
+               int oldWidth = settings.getAsInteger(prefix + "." + id + ".width", 0);
                ScrollBar sb = table.getVerticalBar();
                if ((sb != null) && (oldWidth < width) && (width - oldWidth <= sb.getSize().y))
                {
@@ -416,7 +416,7 @@ public class WidgetHelper
             {
             }
          }
-			settings.put(prefix + "." + id + ".width", width); //$NON-NLS-1$ //$NON-NLS-2$
+         settings.set(prefix + "." + id + ".width", width); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -427,7 +427,7 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void restoreColumnSettings(Table table, IDialogSettings settings, String prefix)
+   public static void restoreColumnSettings(Table table, PreferenceStore settings, String prefix)
 	{
 		TableColumn[] columns = table.getColumns();
 		for(int i = 0; i < columns.length; i++)
@@ -437,7 +437,7 @@ public class WidgetHelper
 			   Object id = columns[i].getData("ID");
 			   if ((id == null) || !(id instanceof Integer))
 			      id = Integer.valueOf(i);
-				int w = settings.getInt(prefix + "." + id + ".width"); //$NON-NLS-1$ //$NON-NLS-2$
+            int w = settings.getAsInteger(prefix + "." + id + ".width", 0); //$NON-NLS-1$ //$NON-NLS-2$
 				columns[i].setWidth((w > 0) ? w : 50);
 			}
 			catch(NumberFormatException e)
@@ -453,7 +453,7 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void saveColumnSettings(Tree tree, IDialogSettings settings, String prefix)
+   public static void saveColumnSettings(Tree tree, PreferenceStore settings, String prefix)
 	{
 		TreeColumn[] columns = tree.getColumns();
 		for(int i = 0; i < columns.length; i++)
@@ -461,7 +461,7 @@ public class WidgetHelper
          Object id = columns[i].getData("ID");
          if ((id == null) || !(id instanceof Integer))
             id = Integer.valueOf(i);
-			settings.put(prefix + "." + id + ".width", columns[i].getWidth()); //$NON-NLS-1$ //$NON-NLS-2$
+         settings.set(prefix + "." + id + ".width", columns[i].getWidth()); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -472,7 +472,7 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void restoreColumnSettings(Tree tree, IDialogSettings settings, String prefix)
+   public static void restoreColumnSettings(Tree tree, PreferenceStore settings, String prefix)
 	{
 		TreeColumn[] columns = tree.getColumns();
 		for(int i = 0; i < columns.length; i++)
@@ -482,7 +482,7 @@ public class WidgetHelper
 	         Object id = columns[i].getData("ID");
 	         if ((id == null) || !(id instanceof Integer))
 	            id = Integer.valueOf(i);
-				int w = settings.getInt(prefix + "." + id + ".width"); //$NON-NLS-1$ //$NON-NLS-2$
+            int w = settings.getAsInteger(prefix + "." + id + ".width", 0); //$NON-NLS-1$ //$NON-NLS-2$
 				columns[i].setWidth(w);
 			}
 			catch(NumberFormatException e)
@@ -497,13 +497,13 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void saveTableViewerSettings(SortableTableViewer viewer, IDialogSettings settings, String prefix)
+   public static void saveTableViewerSettings(SortableTableViewer viewer, PreferenceStore settings, String prefix)
 	{
 		final Table table = viewer.getTable();
 		saveColumnSettings(table, settings, prefix);
 		TableColumn column = table.getSortColumn();
-		settings.put(prefix + ".sortColumn", (column != null) ? (Integer)column.getData("ID") : -1); //$NON-NLS-1$ //$NON-NLS-2$
-		settings.put(prefix + ".sortDirection", table.getSortDirection()); //$NON-NLS-1$
+      settings.set(prefix + ".sortColumn", (column != null) ? (Integer)column.getData("ID") : -1); //$NON-NLS-1$ //$NON-NLS-2$
+      settings.set(prefix + ".sortDirection", table.getSortDirection()); //$NON-NLS-1$
 	}
 	
 	/**
@@ -512,14 +512,14 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void restoreTableViewerSettings(SortableTableViewer viewer, IDialogSettings settings, String prefix)
+   public static void restoreTableViewerSettings(SortableTableViewer viewer, PreferenceStore settings, String prefix)
 	{
 		final Table table = viewer.getTable();
 		restoreColumnSettings(table, settings, prefix);
 		try
 		{
-			table.setSortDirection(settings.getInt(prefix + ".sortDirection")); //$NON-NLS-1$
-			int column = settings.getInt(prefix + ".sortColumn"); //$NON-NLS-1$
+         table.setSortDirection(settings.getAsInteger(prefix + ".sortDirection", SWT.UP)); //$NON-NLS-1$
+         int column = settings.getAsInteger(prefix + ".sortColumn", 0); //$NON-NLS-1$
 			if (column >= 0)
 			{
 				table.setSortColumn(viewer.getColumnById(column));
@@ -536,13 +536,13 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void saveTreeViewerSettings(SortableTreeViewer viewer, IDialogSettings settings, String prefix)
+   public static void saveTreeViewerSettings(SortableTreeViewer viewer, PreferenceStore settings, String prefix)
 	{
 		final Tree tree = viewer.getTree();
 		saveColumnSettings(tree, settings, prefix);
 		TreeColumn column = tree.getSortColumn();
-		settings.put(prefix + ".sortColumn", (column != null) ? (Integer)column.getData("ID") : -1); //$NON-NLS-1$ //$NON-NLS-2$
-		settings.put(prefix + ".sortDirection", tree.getSortDirection()); //$NON-NLS-1$
+      settings.set(prefix + ".sortColumn", (column != null) ? (Integer)column.getData("ID") : -1); //$NON-NLS-1$ //$NON-NLS-2$
+      settings.set(prefix + ".sortDirection", tree.getSortDirection()); //$NON-NLS-1$
 	}
 	
 	/**
@@ -551,14 +551,14 @@ public class WidgetHelper
 	 * @param settings Dialog settings object
 	 * @param prefix Prefix for properties
 	 */
-	public static void restoreTreeViewerSettings(SortableTreeViewer viewer, IDialogSettings settings, String prefix)
+   public static void restoreTreeViewerSettings(SortableTreeViewer viewer, PreferenceStore settings, String prefix)
 	{
 		final Tree tree = viewer.getTree();
 		restoreColumnSettings(tree, settings, prefix);
 		try
 		{
-			tree.setSortDirection(settings.getInt(prefix + ".sortDirection")); //$NON-NLS-1$
-			int column = settings.getInt(prefix + ".sortColumn"); //$NON-NLS-1$
+         tree.setSortDirection(settings.getAsInteger(prefix + ".sortDirection", SWT.UP)); //$NON-NLS-1$
+         int column = settings.getAsInteger(prefix + ".sortColumn", 0); //$NON-NLS-1$
 			if (column >= 0)
 			{
 				tree.setSortColumn(viewer.getColumnById(column));
@@ -576,7 +576,7 @@ public class WidgetHelper
 	 * @param settings
 	 * @param prefix
 	 */
-	public static void saveColumnViewerSettings(ColumnViewer viewer, IDialogSettings settings, String prefix)
+   public static void saveColumnViewerSettings(ColumnViewer viewer, PreferenceStore settings, String prefix)
 	{
 		if (viewer instanceof SortableTableViewer)
 		{
@@ -595,7 +595,7 @@ public class WidgetHelper
 	 * @param settings
 	 * @param prefix
 	 */
-	public static void restoreColumnViewerSettings(ColumnViewer viewer, IDialogSettings settings, String prefix)
+   public static void restoreColumnViewerSettings(ColumnViewer viewer, PreferenceStore settings, String prefix)
 	{
 		if (viewer instanceof SortableTableViewer)
 		{

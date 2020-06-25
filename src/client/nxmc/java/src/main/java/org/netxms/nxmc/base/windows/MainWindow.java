@@ -36,12 +36,16 @@ import org.netxms.nxmc.Registry;
 import org.netxms.nxmc.base.views.Perspective;
 import org.netxms.nxmc.base.widgets.FlatButton;
 import org.netxms.nxmc.resources.ThemeEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main window
  */
 public class MainWindow extends ApplicationWindow
 {
+   private static Logger logger = LoggerFactory.getLogger(MainWindow.class);
+
    private Composite windowContent;
    private Composite topMenu;
    private Composite perspectiveArea;
@@ -152,6 +156,7 @@ public class MainWindow extends ApplicationWindow
     */
    private void switchToPerspective(Perspective p)
    {
+      logger.debug("Switching to perspective " + p.getName());
       if (currentPerspective != null)
          currentPerspective.disposeWidgets();
       currentPerspective = p;

@@ -16,23 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.netxms.nxmc.modules.alarms;
+package org.netxms.nxmc.modules.objects;
 
-import org.eclipse.swt.widgets.Composite;
 import org.netxms.nxmc.base.views.Perspective;
 import org.netxms.nxmc.base.views.PerspectiveConfiguration;
 
 /**
- * Alarm browser perspective
+ * Object browser perspective
  */
-public class AlarmsPerspective extends Perspective
+public class ObjectsPerspective extends Perspective
 {
    /**
     * @param name
     */
-   public AlarmsPerspective()
+   public ObjectsPerspective()
    {
-      super("Alarms");
+      super("Objects");
    }
 
    /**
@@ -42,19 +41,8 @@ public class AlarmsPerspective extends Perspective
    protected void configurePerspective(PerspectiveConfiguration configuration)
    {
       super.configurePerspective(configuration);
-      configuration.hasNavigationArea = false;
+      configuration.hasNavigationArea = true;
       configuration.hasSupplementalArea = false;
-      configuration.multiViewNavigationArea = false;
-      configuration.multiViewMainArea = false;
-   }
-
-   /**
-    * @see org.netxms.nxmc.base.views.Perspective#createMainArea(org.eclipse.swt.widgets.Composite)
-    */
-   @Override
-   protected void createMainArea(Composite parent)
-   {
-      // TODO Auto-generated method stub
-      super.createMainArea(parent);
+      configuration.multiViewNavigationArea = true;
    }
 }

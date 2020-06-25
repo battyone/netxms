@@ -42,22 +42,23 @@ public class ImageCache implements DisposeListener
 	}
 	
 	/**
-	 * Create image cache associated with given control. All images in a cache will be disposed when
-	 * associatet control gets disposed.
-	 * 
-	 * @param control control
-	 */
+    * Create image cache associated with given control. All images in a cache will be disposed when associated control gets
+    * disposed.
+    * 
+    * @param control control
+    */
 	public ImageCache(Control control)
 	{
 		control.addDisposeListener(this);
 	}
-	
+
 	/**
-	 * Add image to cache. For convenience, return created Image object.
-	 * 
-	 * @param descriptor image descriptor
-	 */
-	public Image add(ImageDescriptor descriptor)
+    * Get image from cache or create it if not yet cached.
+    * 
+    * @param descriptor image descriptor
+    * @return image object
+    */
+   public Image create(ImageDescriptor descriptor)
 	{
 		Image image = cache.get(descriptor);
 		if (image == null)
@@ -67,18 +68,18 @@ public class ImageCache implements DisposeListener
 		}
 		return image;
 	}
-	
+
 	/**
-	 * Get image from cache.
-	 * 
-	 * @param descriptor
-	 * @return
-	 */
+    * Get image from cache.
+    * 
+    * @param descriptor
+    * @return image or null if not cached
+    */
 	public Image get(ImageDescriptor descriptor)
 	{
 		return cache.get(descriptor);
 	}
-	
+
 	/**
 	 * Dispose all images in a cache
 	 */

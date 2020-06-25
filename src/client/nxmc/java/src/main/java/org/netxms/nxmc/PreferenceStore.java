@@ -24,8 +24,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.slf4j.Logger;
@@ -58,6 +62,7 @@ public class PreferenceStore
 
    private File storeFile;
    private Properties properties;
+   private Set<IPropertyChangeListener> changeListeners = new HashSet<IPropertyChangeListener>();
    private Logger logger = LoggerFactory.getLogger(PreferenceStore.class);
 
    /**
@@ -122,6 +127,49 @@ public class PreferenceStore
             {
             }
          }
+      }
+   }
+
+   /**
+    * Add property change listener.
+    *
+    * @param listener listener to add
+    */
+   public void addPropertyChangeListener(IPropertyChangeListener listener)
+   {
+      synchronized(changeListeners)
+      {
+         changeListeners.add(listener);
+      }
+   }
+
+   /**
+    * Remove property change listener.
+    *
+    * @param listener listener to remove
+    */
+   public void removePropertyChangeListener(IPropertyChangeListener listener)
+   {
+      synchronized(changeListeners)
+      {
+         changeListeners.remove(listener);
+      }
+   }
+
+   /**
+    * Call each registered property change listener.
+    * 
+    * @param property property name
+    * @param oldValue old value or null
+    * @param newValue new value or null
+    */
+   private void firePropertyChangeListeners(String property, String oldValue, String newValue)
+   {
+      PropertyChangeEvent event = new PropertyChangeEvent(this, property, oldValue, newValue);
+      synchronized(changeListeners)
+      {
+         for(IPropertyChangeListener l : changeListeners)
+            l.propertyChange(event);
       }
    }
 
@@ -310,8 +358,10 @@ public class PreferenceStore
     */
    public void set(String name, String value)
    {
+      String oldValue = properties.getProperty(name);
       properties.setProperty(name, value);
       save();
+      firePropertyChangeListeners(name, oldValue, value);
    }
 
    /**
@@ -322,8 +372,7 @@ public class PreferenceStore
     */
    public void set(String name, boolean value)
    {
-      properties.setProperty(name, Boolean.toString(value));
-      save();
+      set(name, Boolean.toString(value));
    }
 
    /**
@@ -334,8 +383,7 @@ public class PreferenceStore
     */
    public void set(String name, int value)
    {
-      properties.setProperty(name, Integer.toString(value));
-      save();
+      set(name, Integer.toString(value));
    }
 
    /**
@@ -346,8 +394,7 @@ public class PreferenceStore
     */
    public void set(String name, long value)
    {
-      properties.setProperty(name, Long.toString(value));
-      save();
+      set(name, Long.toString(value));
    }
 
    /**
@@ -358,8 +405,7 @@ public class PreferenceStore
     */
    public void set(String name, Point value)
    {
-      properties.setProperty(name, Integer.toString(value.x) + "," + Integer.toString(value.y));
-      save();
+      set(name, Integer.toString(value.x) + "," + Integer.toString(value.y));
    }
 
    /**
@@ -375,6 +421,7 @@ public class PreferenceStore
       for(String s : value)
          properties.setProperty(name + "." + Integer.toString(index), s);
       save();
+      firePropertyChangeListeners(name, null, null);
    }
 
    /**
@@ -385,7 +432,6 @@ public class PreferenceStore
     */
    public void set(String name, RGB value)
    {
-      properties.setProperty(name, Integer.toString(value.red) + "," + Integer.toString(value.green) + "," + Integer.toString(value.blue));
-      save();
+      set(name, Integer.toString(value.red) + "," + Integer.toString(value.green) + "," + Integer.toString(value.blue));
    }
 }

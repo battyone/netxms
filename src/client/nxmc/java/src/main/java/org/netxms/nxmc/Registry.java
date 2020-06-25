@@ -18,12 +18,16 @@
  */
 package org.netxms.nxmc;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
+import org.eclipse.swt.widgets.TrayItem;
 import org.netxms.client.NXCSession;
 import org.netxms.nxmc.base.views.Perspective;
+import org.netxms.nxmc.base.windows.MainWindow;
 import org.netxms.nxmc.modules.alarms.AlarmsPerspective;
+import org.netxms.nxmc.modules.objects.ObjectsPerspective;
 
 /**
  * Global registry
@@ -62,9 +66,32 @@ public final class Registry
       return getInstance().timeZone;
    }
 
+   /**
+    * Get application's state directory.
+    * 
+    * @return application's state directory
+    */
+   public static File getStateDir()
+   {
+      return getInstance().stateDir;
+   }
+
+   /**
+    * Get application's main window.
+    * 
+    * @return application's main window
+    */
+   public static MainWindow getMainWindow()
+   {
+      return getInstance().mainWindow;
+   }
+
    private Set<Perspective> perspectives = new HashSet<Perspective>();
    private NXCSession session = null;
    private TimeZone timeZone = null;
+   private File stateDir = null;
+   private MainWindow mainWindow = null;
+   private TrayItem trayIcon = null;
 
    /**
     * Default constructor
@@ -72,6 +99,7 @@ public final class Registry
    private Registry()
    {
       perspectives.add(new AlarmsPerspective());
+      perspectives.add(new ObjectsPerspective());
    }
 
    /**
@@ -112,5 +140,47 @@ public final class Registry
    public void resetTimeZone()
    {
       timeZone = null;
+   }
+
+   /**
+    * Set application state directory (should be called only by startup code).
+    *
+    * @param stateDir application state directory
+    */
+   public void setStateDir(File stateDir)
+   {
+      if (this.stateDir == null)
+         this.stateDir = stateDir;
+   }
+
+   /**
+    * Set application's main window (should be called only by startup code).
+    *
+    * @param window application's main window
+    */
+   public void setMainWindow(MainWindow window)
+   {
+      if (this.mainWindow == null)
+         this.mainWindow = window;
+   }
+
+   /**
+    * Get current tray icon
+    *
+    * @return current tray icon or null
+    */
+   public TrayItem getTrayIcon()
+   {
+      return trayIcon;
+   }
+
+   /**
+    * Set current tray icon.
+    * 
+    * @param trayIcon new tray icon
+    */
+   public void setTrayIcon(TrayItem trayIcon)
+   {
+      this.trayIcon = trayIcon;
    }
 }
