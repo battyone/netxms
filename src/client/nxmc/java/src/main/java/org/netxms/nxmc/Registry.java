@@ -20,6 +20,7 @@ package org.netxms.nxmc;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 import org.netxms.client.NXCSession;
 import org.netxms.nxmc.base.views.Perspective;
 import org.netxms.nxmc.modules.alarms.AlarmsPerspective;
@@ -51,8 +52,19 @@ public final class Registry
       return getInstance().session;
    }
 
+   /**
+    * Get client timezone
+    * 
+    * @return
+    */
+   public static TimeZone getTimeZone()
+   {
+      return getInstance().timeZone;
+   }
+
    private Set<Perspective> perspectives = new HashSet<Perspective>();
    private NXCSession session = null;
+   private TimeZone timeZone = null;
 
    /**
     * Default constructor
@@ -80,5 +92,25 @@ public final class Registry
    public void setSession(NXCSession session)
    {
       this.session = session;
+   }
+
+   /**
+    * Set server time zone
+    */
+   public void setServerTimeZone()
+   {
+      if (session != null)
+      {
+         String tz = session.getServerTimeZone();
+         timeZone = TimeZone.getTimeZone(tz.replaceAll("[A-Za-z]+([\\+\\-][0-9]+).*", "GMT$1")); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+   }
+
+   /**
+    * Reset time zone to default
+    */
+   public void resetTimeZone()
+   {
+      timeZone = null;
    }
 }

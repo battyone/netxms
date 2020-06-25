@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -275,6 +276,33 @@ public class PreferenceStore
    }
 
    /**
+    * Get property as color definition.
+    * 
+    * @param name property name
+    * @param defaultValue default value to be returned if property does not exist or cannot be parsed.
+    * @return property value as color definition or default value
+    */
+   public RGB getAsColor(String name, RGB defaultValue)
+   {
+      String v = properties.getProperty(name);
+      if (v == null)
+         return defaultValue;
+
+      String[] parts = v.split(",");
+      if (parts.length != 3)
+         return defaultValue;
+
+      try
+      {
+         return new RGB(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+      }
+      catch(Exception e)
+      {
+         return defaultValue;
+      }
+   }
+
+   /**
     * Set property.
     * 
     * @param name property name
@@ -312,7 +340,7 @@ public class PreferenceStore
 
    /**
     * Set property.
-    * 
+    *
     * @param name property name
     * @param value new property value
     */
@@ -324,7 +352,7 @@ public class PreferenceStore
 
    /**
     * Set property.
-    * 
+    *
     * @param name property name
     * @param value new property value
     */
@@ -336,7 +364,7 @@ public class PreferenceStore
 
    /**
     * Set property.
-    * 
+    *
     * @param name property name
     * @param value new property value
     */
@@ -346,6 +374,18 @@ public class PreferenceStore
       int index = 0;
       for(String s : value)
          properties.setProperty(name + "." + Integer.toString(index), s);
+      save();
+   }
+
+   /**
+    * Set property.
+    *
+    * @param name property name
+    * @param value new property value
+    */
+   public void set(String name, RGB value)
+   {
+      properties.setProperty(name, Integer.toString(value.red) + "," + Integer.toString(value.green) + "," + Integer.toString(value.blue));
       save();
    }
 }
