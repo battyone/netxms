@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.window.Window.IExceptionHandler;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -47,6 +48,7 @@ import org.netxms.nxmc.base.login.LoginDialog;
 import org.netxms.nxmc.base.login.LoginJob;
 import org.netxms.nxmc.base.windows.MainWindow;
 import org.netxms.nxmc.localization.LocalizationHelper;
+import org.netxms.nxmc.resources.StatusDisplayInfo;
 import org.netxms.nxmc.tools.MessageDialogHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,8 @@ public class Startup
     */
    public static void main(String[] args)
    {
+      final Display display = new Display();
+
       String homeDir = System.getProperty("user.home");
       File stateDir = new File(homeDir + File.separator + ".nxmc4");
       if (!stateDir.isDirectory())
@@ -75,8 +79,11 @@ public class Startup
 
       logger.info("NetXMS Management Console version " + VersionInfo.version() + " starting");
       logger.info("State directory: " + stateDir.getAbsolutePath());
+      logger.info("Device DPI = " + display.getDPI() + "; zoom = " + DPIUtil.getDeviceZoom());
+
       PreferenceStore.open(stateDir.getAbsolutePath());
       BrandingManager.create();
+      StatusDisplayInfo.init(display);
 
       Window.setExceptionHandler(new IExceptionHandler() {
          @Override
@@ -86,13 +93,13 @@ public class Startup
          }
       });
 
-      doLogin(Display.getCurrent(), args);
+      doLogin(display, args);
 
       MainWindow w = new MainWindow(null);
       Registry.getInstance().setMainWindow(w);
       w.setBlockOnOpen(true);
       w.open();
-      Display.getCurrent().dispose();
+      display.dispose();
    }
 
    /**

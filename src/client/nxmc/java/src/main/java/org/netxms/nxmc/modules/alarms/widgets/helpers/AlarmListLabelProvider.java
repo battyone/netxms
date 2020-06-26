@@ -56,7 +56,6 @@ public class AlarmListLabelProvider extends LabelProvider implements ITableLabel
 
 	private NXCSession session;
 	private Image[] stateImages = new Image[5];
-	private Image commentsImage;
 	private boolean blinkState = true;
    private boolean showColor = true;
 	private TreeViewer viewer;
@@ -71,13 +70,11 @@ public class AlarmListLabelProvider extends LabelProvider implements ITableLabel
       session = Registry.getSession();
       objectLabelProvier = new BaseObjectLabelProvider();
 
-      stateImages[0] = ResourceManager.getImageDescriptor("icons/outstanding.png").createImage(); //$NON-NLS-1$
-      stateImages[1] = ResourceManager.getImageDescriptor("icons/acknowledged.png").createImage(); //$NON-NLS-1$
-      stateImages[2] = ResourceManager.getImageDescriptor("icons/resolved.png").createImage(); //$NON-NLS-1$
-      stateImages[3] = ResourceManager.getImageDescriptor("icons/terminated.png").createImage(); //$NON-NLS-1$
-      stateImages[4] = ResourceManager.getImageDescriptor("icons/acknowledged_sticky.png").createImage(); //$NON-NLS-1$
-
-      commentsImage = ResourceManager.getImageDescriptor("icons/comments.png").createImage(); //$NON-NLS-1$
+      stateImages[0] = ResourceManager.getImageDescriptor("icons/alarms/outstanding.png").createImage(); //$NON-NLS-1$
+      stateImages[1] = ResourceManager.getImageDescriptor("icons/alarms/acknowledged.png").createImage(); //$NON-NLS-1$
+      stateImages[2] = ResourceManager.getImageDescriptor("icons/alarms/resolved.png").createImage(); //$NON-NLS-1$
+      stateImages[3] = ResourceManager.getImageDescriptor("icons/alarms/terminated.png").createImage(); //$NON-NLS-1$
+      stateImages[4] = ResourceManager.getImageDescriptor("icons/alarms/acknowledged_sticky.png").createImage(); //$NON-NLS-1$
 	}
 
    /**
@@ -100,7 +97,7 @@ public class AlarmListLabelProvider extends LabelProvider implements ITableLabel
 			   AbstractObject object = session.findObjectById(((Alarm)element).getSourceObjectId());
             return (object != null) ? objectLabelProvier.getImage(object) : null;
 			case AlarmList.COLUMN_COMMENTS:
-				return (((Alarm)element).getCommentsCount() > 0) ? commentsImage : null;
+            return (((Alarm)element).getCommentsCount() > 0) ? SharedIcons.IMG_COMMENTS : null;
 		}
 		return null;
 	}

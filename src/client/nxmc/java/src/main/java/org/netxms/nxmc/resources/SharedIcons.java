@@ -36,6 +36,7 @@ public class SharedIcons
 	public static ImageDescriptor CLOSE;
 	public static ImageDescriptor COLLAPSE;
 	public static ImageDescriptor COLLAPSE_ALL;
+   public static ImageDescriptor COMMENTS;
    public static ImageDescriptor CONTAINER;
 	public static ImageDescriptor COPY;
 	public static ImageDescriptor CSV;
@@ -62,6 +63,7 @@ public class SharedIcons
 	public static ImageDescriptor TERMINATE;
 	public static ImageDescriptor UNKNOWN_OBJECT;
 	public static ImageDescriptor UP;
+   public static ImageDescriptor USER;
 	public static ImageDescriptor XML;
 	public static ImageDescriptor ZOOM_IN;
 	public static ImageDescriptor ZOOM_OUT;
@@ -76,6 +78,7 @@ public class SharedIcons
 	public static Image IMG_CLOSE;
 	public static Image IMG_COLLAPSE;
 	public static Image IMG_COLLAPSE_ALL;
+   public static Image IMG_COMMENTS;
    public static Image IMG_CONTAINER;
 	public static Image IMG_COPY;
 	public static Image IMG_CSV;
@@ -102,6 +105,7 @@ public class SharedIcons
 	public static Image IMG_TERMINATE;
 	public static Image IMG_UNKNOWN_OBJECT;
 	public static Image IMG_UP;
+   public static Image IMG_USER;
 	public static Image IMG_XML;
 	public static Image IMG_ZOOM_IN;
 	public static Image IMG_ZOOM_OUT;
@@ -121,6 +125,7 @@ public class SharedIcons
       CLOSE = ResourceManager.getImageDescriptor("icons/close.gif"); //$NON-NLS-1$
       COLLAPSE = ResourceManager.getImageDescriptor("icons/collapse.png"); //$NON-NLS-1$
       COLLAPSE_ALL = ResourceManager.getImageDescriptor("icons/collapseall.png"); //$NON-NLS-1$
+      COMMENTS = ResourceManager.getImageDescriptor("icons/comments.png");
       CONTAINER = ResourceManager.getImageDescriptor("icons/container.png"); //$NON-NLS-1$
       COPY = ResourceManager.getImageDescriptor("icons/copy.gif"); //$NON-NLS-1$
       CSV = ResourceManager.getImageDescriptor("icons/csv.png"); //$NON-NLS-1$
@@ -147,6 +152,7 @@ public class SharedIcons
       TERMINATE = ResourceManager.getImageDescriptor("icons/terminate.gif"); //$NON-NLS-1$
       UNKNOWN_OBJECT = ResourceManager.getImageDescriptor("icons/unknown_obj.gif"); //$NON-NLS-1$
       UP = ResourceManager.getImageDescriptor("icons/up.png"); //$NON-NLS-1$
+      USER = ResourceManager.getImageDescriptor("icons/user.png"); //$NON-NLS-1$
       XML = ResourceManager.getImageDescriptor("icons/xml.gif"); //$NON-NLS-1$
       ZOOM_IN = ResourceManager.getImageDescriptor("icons/zoom_in.png"); //$NON-NLS-1$
       ZOOM_OUT = ResourceManager.getImageDescriptor("icons/zoom_out.png"); //$NON-NLS-1$
@@ -161,6 +167,7 @@ public class SharedIcons
 		IMG_CLOSE = CLOSE.createImage();
 		IMG_COLLAPSE = COLLAPSE.createImage();
 		IMG_COLLAPSE_ALL = COLLAPSE_ALL.createImage();
+      IMG_COMMENTS = COMMENTS.createImage();
 		IMG_CONTAINER = CONTAINER.createImage();
 		IMG_COPY = COPY.createImage();
 		IMG_CSV = CSV.createImage();
@@ -187,6 +194,7 @@ public class SharedIcons
 		IMG_TERMINATE = TERMINATE.createImage();
 		IMG_UNKNOWN_OBJECT = UNKNOWN_OBJECT.createImage();
 		IMG_UP = UP.createImage();
+      IMG_USER = USER.createImage();
 		IMG_XML = XML.createImage();
 		IMG_ZOOM_IN = ZOOM_IN.createImage();
 		IMG_ZOOM_OUT = ZOOM_OUT.createImage();

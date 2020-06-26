@@ -248,7 +248,7 @@ public class AlarmNotifier
    private static String getSoundAndDownloadIfRequired(String severity)
    {
       String soundName = ps.getAsString("AlarmNotifier.Sound." + severity);//$NON-NLS-1$
-      if (soundName.isEmpty())
+      if ((soundName == null) || soundName.isEmpty())
          return null;
       
       if (!isSoundFileExist(soundName))

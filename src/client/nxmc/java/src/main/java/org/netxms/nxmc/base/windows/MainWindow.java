@@ -111,8 +111,11 @@ public class MainWindow extends ApplicationWindow
       perspectiveArea.setLayout(new FillLayout());
       gd = new GridData();
       gd.grabExcessHorizontalSpace = true;
+      gd.grabExcessVerticalSpace = true;
       gd.horizontalAlignment = SWT.FILL;
+      gd.verticalAlignment = SWT.FILL;
       perspectiveArea.setLayoutData(gd);
+      perspectiveArea.setLayout(new FillLayout());
 
       setupPerspectiveSwitcher();
 
@@ -161,5 +164,6 @@ public class MainWindow extends ApplicationWindow
          currentPerspective.disposeWidgets();
       currentPerspective = p;
       currentPerspective.createWidgets(perspectiveArea);
+      perspectiveArea.layout(true, true);
    }
 }

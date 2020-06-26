@@ -421,12 +421,12 @@ public class WidgetHelper
 	}
 
 	/**
-	 * Restore settings of table viewer columns previously saved by call to WidgetHelper.saveColumnSettings
-	 * 
-	 * @param table Table control
-	 * @param settings Dialog settings object
-	 * @param prefix Prefix for properties
-	 */
+    * Restore settings of table viewer columns previously saved by call to WidgetHelper.saveColumnSettings
+    *
+    * @param table Table control
+    * @param settings Dialog settings object
+    * @param prefix Prefix for properties
+    */
    public static void restoreColumnSettings(Table table, PreferenceStore settings, String prefix)
 	{
 		TableColumn[] columns = table.getColumns();
@@ -438,14 +438,15 @@ public class WidgetHelper
 			   if ((id == null) || !(id instanceof Integer))
 			      id = Integer.valueOf(i);
             int w = settings.getAsInteger(prefix + "." + id + ".width", 0); //$NON-NLS-1$ //$NON-NLS-2$
-				columns[i].setWidth((w > 0) ? w : 50);
+            if (w > 0)
+               columns[i].setWidth(w);
 			}
 			catch(NumberFormatException e)
 			{
 			}
 		}
 	}
-	
+
 	/**
 	 * Save settings of tree viewer columns
 	 * 
@@ -483,7 +484,8 @@ public class WidgetHelper
 	         if ((id == null) || !(id instanceof Integer))
 	            id = Integer.valueOf(i);
             int w = settings.getAsInteger(prefix + "." + id + ".width", 0); //$NON-NLS-1$ //$NON-NLS-2$
-				columns[i].setWidth(w);
+            if (w > 0)
+               columns[i].setWidth(w);
 			}
 			catch(NumberFormatException e)
 			{
@@ -555,20 +557,14 @@ public class WidgetHelper
 	{
 		final Tree tree = viewer.getTree();
 		restoreColumnSettings(tree, settings, prefix);
-		try
+      tree.setSortDirection(settings.getAsInteger(prefix + ".sortDirection", SWT.UP)); //$NON-NLS-1$
+      int column = settings.getAsInteger(prefix + ".sortColumn", 0); //$NON-NLS-1$
+      if (column >= 0)
 		{
-         tree.setSortDirection(settings.getAsInteger(prefix + ".sortDirection", SWT.UP)); //$NON-NLS-1$
-         int column = settings.getAsInteger(prefix + ".sortColumn", 0); //$NON-NLS-1$
-			if (column >= 0)
-			{
-				tree.setSortColumn(viewer.getColumnById(column));
-			}
-		}
-		catch(NumberFormatException e)
-		{
+         tree.setSortColumn(viewer.getColumnById(column));
 		}
 	}
-	
+
 	/**
 	 * Wrapper for saveTableViewerSettings/saveTreeViewerSettings
 	 * 

@@ -34,8 +34,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -134,7 +132,6 @@ public class AlarmList extends CompositeWithMessageBar
 	private Action actionResolve;
 	private Action actionStickyAcknowledge;
 	private Action actionTerminate;
-	private Action actionShowAlarmDetails;
 	private Action actionShowObjectDetails;
    private Action actionCreateIssue;
    private Action actionShowIssue;
@@ -165,7 +162,7 @@ public class AlarmList extends CompositeWithMessageBar
 		this.visibilityValidator = visibilityValidator;
 
       getContent().setLayout(new FormLayout());
-		
+
       // Create filter area
       filterText = new FilterText(getContent(), SWT.NONE, null, true);
       filterText.addModifyListener(new ModifyListener() {
@@ -216,13 +213,6 @@ public class AlarmList extends CompositeWithMessageBar
          public void widgetDisposed(DisposeEvent e)
          {
             WidgetHelper.saveTreeViewerSettings(alarmViewer, PreferenceStore.getInstance(), configPrefix);
-         }
-      });
-      alarmViewer.addDoubleClickListener(new IDoubleClickListener() {
-         @Override
-         public void doubleClick(DoubleClickEvent event)
-         {
-            actionShowAlarmDetails.run();
          }
       });
 
@@ -462,7 +452,7 @@ public class AlarmList extends CompositeWithMessageBar
 				}
 			}
 		};
-      actionCopy.setId("AlarmList.Copy"); //$NON-NLS-1$
+      actionCopy.setId("AlarmList.Copy");
 
       actionCopyMessage = new Action(i18n.tr("Copy &message to clipboard")) {
 			@Override
@@ -471,7 +461,7 @@ public class AlarmList extends CompositeWithMessageBar
 				TreeItem[] selection = alarmViewer.getTree().getSelection();
 				if (selection.length > 0)
 				{
-               final String newLine = SystemUtils.IS_OS_WINDOWS ? "\r\n" : "\n"; //$NON-NLS-1$ //$NON-NLS-2$
+               final String newLine = SystemUtils.IS_OS_WINDOWS ? "\r\n" : "\n";
 					StringBuilder sb = new StringBuilder();
 					for(int i = 0; i < selection.length; i++)
 					{
@@ -485,15 +475,15 @@ public class AlarmList extends CompositeWithMessageBar
 		};
       actionCopyMessage.setId("AlarmList.CopyMessage"); //$NON-NLS-1$
 
-      actionComments = new Action(i18n.tr("Comments"), ResourceManager.getImageDescriptor("icons/comments.png")) { //$NON-NLS-1$
+      actionComments = new Action(i18n.tr("Comments"), SharedIcons.COMMENTS) {
          @Override
          public void run()
          {
          }
       };
-      actionComments.setId("AlarmList.Comments"); //$NON-NLS-1$
+      actionComments.setId("AlarmList.Comments");
 
-      actionAcknowledge = new Action(i18n.tr("&Acknowledge"), ResourceManager.getImageDescriptor("icons/acknowledged.png")) { //$NON-NLS-1$
+      actionAcknowledge = new Action(i18n.tr("&Acknowledge"), ResourceManager.getImageDescriptor("icons/alarms/acknowledged.png")) {
 			@Override
 			public void run()
 			{
@@ -502,8 +492,7 @@ public class AlarmList extends CompositeWithMessageBar
 		};
       actionAcknowledge.setId("AlarmList.Acknowledge"); //$NON-NLS-1$
 
-      actionStickyAcknowledge = new Action(i18n.tr("&Sticky acknowledge"),
-            ResourceManager.getImageDescriptor("icons/acknowledged_sticky.png")) {
+      actionStickyAcknowledge = new Action(i18n.tr("&Sticky acknowledge"), ResourceManager.getImageDescriptor("icons/alarms/acknowledged_sticky.png")) {
 			@Override
 			public void run()
 			{
@@ -512,7 +501,7 @@ public class AlarmList extends CompositeWithMessageBar
 		};
       actionStickyAcknowledge.setId("AlarmList.StickyAcknowledge"); //$NON-NLS-1$
 
-      actionResolve = new Action(i18n.tr("&Resolve"), ResourceManager.getImageDescriptor("icons/resolved.png")) { //$NON-NLS-1$
+      actionResolve = new Action(i18n.tr("&Resolve"), ResourceManager.getImageDescriptor("icons/alarms/resolved.png")) { //$NON-NLS-1$
 			@Override
 			public void run()
 			{
@@ -521,7 +510,7 @@ public class AlarmList extends CompositeWithMessageBar
 		};
       actionResolve.setId("AlarmList.Resolve"); //$NON-NLS-1$
 
-      actionTerminate = new Action(i18n.tr("&Terminate"), ResourceManager.getImageDescriptor("icons/terminated.png")) { //$NON-NLS-1$
+      actionTerminate = new Action(i18n.tr("&Terminate"), ResourceManager.getImageDescriptor("icons/alarms/terminated.png")) { //$NON-NLS-1$
 			@Override
 			public void run()
 			{
@@ -561,12 +550,12 @@ public class AlarmList extends CompositeWithMessageBar
 			{
 			}
 		};
-      actionShowObjectDetails.setId("AlarmList.ShowObjectDetails"); //$NON-NLS-1$
+      actionShowObjectDetails.setId("AlarmList.ShowObjectDetails");
 
       actionExportToCsv = new ExportToCsvAction(view, alarmViewer, true);
 
 		//time based sticky acknowledgement	
-      timeAcknowledgeOther = new Action("Other...", ResourceManager.getImageDescriptor("icons/acknowledged.png")) { //$NON-NLS-1$ //$NON-NLS-2$
+      timeAcknowledgeOther = new Action("Other...") {
          @Override
          public void run()
          {
@@ -737,7 +726,6 @@ public class AlarmList extends CompositeWithMessageBar
       if (selection.size() == 1)
       {
          manager.add(new Separator());
-         manager.add(actionShowAlarmDetails);
          manager.add(actionComments);
          if (session.isHelpdeskLinkActive())
          {
@@ -908,6 +896,10 @@ public class AlarmList extends CompositeWithMessageBar
                return;
 
             alarmViewer.setInput(filteredAlarms);
+
+            // For some unknown reason setInput may remove sort indicator from column - this call will restore it
+            alarmViewer.getTree().setSortColumn(alarmViewer.getTree().getSortColumn());
+
             if ((session.getAlarmListDisplayLimit() > 0) && (selectedAlarms.size() >= session.getAlarmListDisplayLimit()))
             {
                showMessage(MessageBar.INFORMATION,
@@ -973,7 +965,7 @@ public class AlarmList extends CompositeWithMessageBar
          }
       }.start();
    }
-	
+
 	/**
 	 * @param filter
 	 */

@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.Signature;
 import java.security.cert.Certificate;
 import java.util.Locale;
+import java.util.ServiceLoader;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
@@ -36,6 +37,7 @@ import org.netxms.client.constants.RCC;
 import org.netxms.nxmc.PreferenceStore;
 import org.netxms.nxmc.Registry;
 import org.netxms.nxmc.localization.LocalizationHelper;
+import org.netxms.nxmc.services.LoginListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -217,7 +219,19 @@ public class LoginJob implements IRunnableWithProgress
     */
    private void callLoginListeners(NXCSession session)
    {
-      // TODO: implement login listeners
+      ServiceLoader<LoginListener> loader = ServiceLoader.load(LoginListener.class);
+      for(LoginListener l : loader)
+      {
+         logger.debug("Calling login listener " + l.toString());
+         try
+         {
+            l.afterLogin(session, Display.getCurrent());
+         }
+         catch(Exception e)
+         {
+            logger.error("Exception in login listener", e);
+         }
+      }
    }
 
    /**

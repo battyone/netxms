@@ -18,15 +18,19 @@
  */
 package org.netxms.nxmc.modules.alarms;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.netxms.nxmc.base.views.Perspective;
 import org.netxms.nxmc.base.views.PerspectiveConfiguration;
+import org.netxms.nxmc.modules.alarms.widgets.AlarmList;
 
 /**
  * Alarm browser perspective
  */
 public class AlarmsPerspective extends Perspective
 {
+   private AlarmList alarmList;
+
    /**
     * @param name
     */
@@ -54,7 +58,6 @@ public class AlarmsPerspective extends Perspective
    @Override
    protected void createMainArea(Composite parent)
    {
-      // TODO Auto-generated method stub
-      super.createMainArea(parent);
+      alarmList = new AlarmList(null, parent, SWT.NONE, "AlarmPerspective.AlarmList", null);
    }
 }
