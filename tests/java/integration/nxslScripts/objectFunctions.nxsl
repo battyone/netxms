@@ -1,0 +1,12 @@
+//Create container
+infrastructureService = FindObject(2);
+container = CreateContainer(infrastructureService, "New Container");
+assert(FindObject(container->id)->name == "New Container");
+
+//Create node
+node = CreateNode(infrastructureService, "Test", "0.0.0.0", 0);
+assert(FindObject(node->id)->name == "Test");
+
+//Bind object
+BindObject(container, node);
+assert(container->children[0]->id == node->id);

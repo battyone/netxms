@@ -3,11 +3,11 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.netxms</groupId>
-  <artifactId>netxms-client</artifactId>
+  <artifactId>netxms-integration-tests</artifactId>
   <packaging>jar</packaging>
   <version>3.4-SNAPSHOT</version>
-  <name>netxms-client</name>
-  <description>NetXMS client library - complete JAVA API</description>
+  <name>netxms-integration-test</name>
+  <description>NetXMS client api integration tests</description>
   <url>http://www.netxms.org</url>
 
   <properties>
@@ -40,16 +40,9 @@
     </developer>
   </developers>
   <issueManagement>
-    <system>Redmine</system>
-    <url>https://dev.raden.solutions/projects/netxms</url>
+    <system>YouTrack</system>
+    <url>https://track.radensolutions.com/issues/NX</url>
   </issueManagement>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <build>
     <finalName>${build.finalName}</finalName>
@@ -70,26 +63,7 @@
         <configuration>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
-	<configuration>
-          <source>8</source>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>         
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <failOnError>false</failOnError>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -125,6 +99,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.netxms</groupId>
+      <artifactId>netxms-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.simpleframework</groupId>
       <artifactId>simple-xml</artifactId>
       <version>2.6.4</version>
@@ -137,78 +116,4 @@
     </dependency>
   </dependencies>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.0</version>
-         <configuration>
-           <source>8</source>
-           <includeDependencySources>true</includeDependencySources>
-           <!--<sourcepath>../../../java/client/mobile-agent:./:../../../libnxjava/java/base/netxms-base/src/main/java</sourcepath>-->
-           <dependencySourceExcludes>
-             <dependencySourceExclude>org.simpleframework:*</dependencySourceExclude>
-             <dependencySourceExclude>junit:*</dependencySourceExclude>
-             <dependencySourceExclude>org.junit:*</dependencySourceExclude>
-           </dependencySourceExcludes>
-         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.18.1</version>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>publish</id>
-        <build>
-          <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>pkg-build</id>
-      <properties>
-        <build.finalName>${project.artifactId}</build.finalName>
-      </properties>
-    </profile>
-  </profiles>
 </project>
