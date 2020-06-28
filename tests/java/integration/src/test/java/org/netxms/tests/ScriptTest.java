@@ -23,16 +23,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.netxms.client.NXCSession;
 import org.netxms.client.ScriptCompilationResult;
+import org.netxms.client.TextOutputListener;
 
 /**
  * Tests for scripting functions
  */
-public class ScriptTest extends AbstractSessionTest
+public class ScriptTest extends AbstractSessionTest implements TextOutputListener
 {
-   NXCSession session;
+   private NXCSession session;
+   private Boolean scriptFailed;
    
    public void testAddressMap() throws Exception
    {
@@ -59,24 +60,49 @@ public class ScriptTest extends AbstractSessionTest
    
    private void executeScript(Path path) throws Exception
    {
-      ScriptCompilationResult r = session.compileScript("", true);
+      System.out.println("Executing script: " + path.toString());
+      String script = new String(Files.readAllBytes(path));
+      ScriptCompilationResult r = session.compileScript(script, true);
+      if (r.errorMessage != null)
+         System.out.println("Compilation error message: \"" + r.errorMessage + "\"");
       assertTrue(r.success);
       assertNotNull(r.code);
       assertNull(r.errorMessage);
       
+      scriptFailed = false;
+      session.executeScript(2, script, ScriptTest.this);
+      assertFalse(scriptFailed);         
    }
    
    public void testNXSL() throws Exception
    {
       session = connect();
-      //open folder and enumirate files
-      //read all files under folder
-      List<Path> paths = Files.walk(Paths.get("./")).filter(Files::isRegularFile).collect(Collectors.toList());
+      List<Path> paths = Files.walk(Paths.get("./nxslScripts")).filter(Files::isRegularFile).collect(Collectors.toList());
       for(Path p : paths)
       {
          executeScript(p);
       }
       
       session.disconnect();
+   }
+
+   /* (non-Javadoc)
+    * @see org.netxms.client.ActionExecutionListener#messageReceived(java.lang.String)
+    */
+   @Override
+   public void messageReceived(final String text)
+   {
+      System.out.println(text);
+   }
+
+   @Override
+   public void setStreamId(long streamId)
+   {
+   }
+
+   @Override
+   public void onError()
+   {
+      scriptFailed = true;
    }
 }

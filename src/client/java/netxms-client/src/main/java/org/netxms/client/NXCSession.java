@@ -6978,9 +6978,13 @@ public class NXCSession
                if (m.getFieldAsInt32(NXCPCodes.VID_RCC) != RCC.SUCCESS)
                {
                   String errorMessage = m.getFieldAsString(NXCPCodes.VID_ERROR_TEXT);
-                  if ((errorMessage != null) && (listener != null))
+                  if ((listener != null))
                   {
-                     listener.messageReceived(errorMessage + "\n\n");
+                     if (errorMessage != null)
+                     {
+                        listener.messageReceived(errorMessage + "\n\n");
+                     }
+                     listener.onError();
                   }
                }
                else

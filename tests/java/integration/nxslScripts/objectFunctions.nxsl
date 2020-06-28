@@ -1,12 +1,91 @@
-//Create container
+//Constants
 infrastructureService = FindObject(2);
-container = CreateContainer(infrastructureService, "New Container");
-assert(FindObject(container->id)->name == "New Container");
+containerName = "Integration Test Container";
+nodeName = "Integration Test node";
+
+//Create container
+container = CreateContainer(infrastructureService, containerName);
+assert(FindObject(container->id)->name == containerName);
 
 //Create node
-node = CreateNode(infrastructureService, "Test", "0.0.0.0", 0);
-assert(FindObject(node->id)->name == "Test");
+node = CreateNode(infrastructureService, nodeName, "0.0.0.0", 0);
+assert(FindObject(node->id)->name == nodeName);
 
-//Bind object
+containerId = container->id;
+nodeId = node->id;
+
+//Bind/Unbind object
 BindObject(container, node);
 assert(container->children[0]->id == node->id);
+UnbindObject(container, node);
+assert(container->children[0] == null);
+
+//Find node object
+findResult = FindNodeObject($node, nodeName);
+assert(findResult->id == node->id);
+findResult = FindNodeObject($node, containerName);
+assert(findResult == null);
+findResult = FindNodeObject($node, nodeId);
+assert(findResult->id == node->id);
+
+//Find object
+findResult = FindObject(containerName, node);
+assert(findResult->id == container->id);
+findResult = FindObject(containerId, node);
+assert(findResult->name == containerName);
+findResult = FindObject("Unknown Object", null);
+assert(findResult == null);
+
+//Manage/Unmanage
+assert((node->status & Status::UNMANAGED) != Status::UNMANAGED);
+UnmanageObject(node);
+assert((node->status & Status::UNMANAGED) == Status::UNMANAGED);
+ManageObject(node);
+assert((node->status & Status::UNMANAGED) != Status::UNMANAGED);
+
+//Mintenance
+assert(node->isInMaintenanceMode == false);
+EnterMaintenance(node);
+assert(node->isInMaintenanceMode);
+LeaveMaintenance(node);
+assert(node->isInMaintenanceMode == false);
+
+//Custom attributes
+assert(GetCustomAttribute(node, "CustomAttribute") == null);
+SetCustomAttribute(node, "CustomAttribute", "test123");
+assert(GetCustomAttribute(node, "CustomAttribute") == "test123");
+SetCustomAttribute(node, "CustomAttribute", "test");
+assert(GetCustomAttribute(node, "CustomAttribute") == "test");
+DeleteCustomAttribute(node, "CustomAttribute");
+assert(GetCustomAttribute(node, "CustomAttribute") == null);
+
+//Find our node in all nodes
+nodeFound = false;
+for (n : GetAllNodes()) 
+{
+   if(n->id == nodeId)
+   {
+   	nodeFound = true;
+   	break;
+   }
+}
+assert(nodeFound);
+
+//GetInterfaceName()
+//GetInterfaceObject()
+//GetNodeInterfaces()
+//GetNodeParents()
+//GetNodeTemplates()
+//GetObjectChildren()
+//GetObjectParents()
+//SetInterfaceExpectedState()
+
+RenameObject(container, "Test2");
+assert(container->name == "Test2");
+
+//Delete all objects
+DeleteObject(container);
+DeleteObject(node);
+sleep(10000);
+assert(FindObject(nodeId) == null);
+assert(FindObject(containerId) == null);
