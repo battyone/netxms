@@ -41,6 +41,11 @@ public class AgentTest extends AbstractSessionTest
          public void setStreamId(long streamId)
          {
          }
+
+         @Override
+         public void onError()
+         {
+         }
       }, null);
 
       session.disconnect();

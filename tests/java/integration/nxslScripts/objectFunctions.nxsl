@@ -1,7 +1,19 @@
+/*
+* This script requires:
+*     node with 2 interfaces 
+*     tempate that is parent for this node  
+*/
+
 //Constants
 infrastructureService = FindObject(2);
 containerName = "Integration Test Container";
 nodeName = "Integration Test node";
+nodeWithInterfacesId = %d;
+templateId = %d;
+interfaceName1 = "%s";
+interfaceName2 = "%s";
+nodeWithInterfaces = FindObject(nodeWithInterfacesId);
+template = FindObject(templateId);
 
 //Create container
 container = CreateContainer(infrastructureService, containerName);
@@ -71,14 +83,35 @@ for (n : GetAllNodes())
 }
 assert(nodeFound);
 
-//GetInterfaceName()
-//GetInterfaceObject()
-//GetNodeInterfaces()
-//GetNodeParents()
+//Interfaces
+name = GetInterfaceName(nodeWithInterfaces, 0);
+assert(name == interfaceName1);
+name = GetInterfaceName(nodeWithInterfaces, 1);
+assert(name == interfaceName2);
+
+interface = GetInterfaceObject(nodeWithInterfaces, 0); 
+assert(interface->ifIndex == 0); 
+assert(interface->name == interfaceName1); 
+
+assert(interface->expectedState == 0); 
+SetInterfaceExpectedState(i, "IGNORE");
+assert(interface->expectedState == 2); 
+
+interfaces = GetNodeInterfaces(nodeWithInterfaces);
+assert(interfaces[0]->ifIndex == 0); 
+assert(interfaces[0]->name == interfaceName1); 
+assert(interfaces[1]->ifIndex == 1); 
+assert(interfaces[1]->name == interfaceName2); 
+
+//Parents, children and templates
+parents = GetNodeParents(node);
+println parents[0]->name;
+assert(parents[0]->name == "Infrastructure Services");
+assert(parents[1] == null);
+
 //GetNodeTemplates()
 //GetObjectChildren()
 //GetObjectParents()
-//SetInterfaceExpectedState()
 
 RenameObject(container, "Test2");
 assert(container->name == "Test2");
@@ -86,6 +119,6 @@ assert(container->name == "Test2");
 //Delete all objects
 DeleteObject(container);
 DeleteObject(node);
-sleep(10000);
+sleep(30000);
 assert(FindObject(nodeId) == null);
 assert(FindObject(containerId) == null);
