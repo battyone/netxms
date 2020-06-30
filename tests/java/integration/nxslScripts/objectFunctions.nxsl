@@ -8,11 +8,11 @@
 infrastructureService = FindObject(2);
 containerName = "Integration Test Container";
 nodeName = "Integration Test node";
-nodeWithInterfacesId = %d;
+preCreatedNodeId = %d;
 templateId = %d;
 interfaceName1 = "%s";
 interfaceName2 = "%s";
-nodeWithInterfaces = FindObject(nodeWithInterfacesId);
+preCreatedNode = FindObject(preCreatedNodeId);
 template = FindObject(templateId);
 
 //Create container
@@ -32,12 +32,14 @@ assert(container->children[0]->id == node->id);
 UnbindObject(container, node);
 assert(container->children[0] == null);
 
+sleep(5000);
+
 //Find node object
-findResult = FindNodeObject($node, nodeName);
+findResult = FindNodeObject(node, nodeName);
 assert(findResult->id == node->id);
-findResult = FindNodeObject($node, containerName);
+findResult = FindNodeObject(node, containerName);
 assert(findResult == null);
-findResult = FindNodeObject($node, nodeId);
+findResult = FindNodeObject(node, nodeId);
 assert(findResult->id == node->id);
 
 //Find object
@@ -84,20 +86,20 @@ for (n : GetAllNodes())
 assert(nodeFound);
 
 //Interfaces
-name = GetInterfaceName(nodeWithInterfaces, 0);
+name = GetInterfaceName(preCreatedNode, 0);
 assert(name == interfaceName1);
-name = GetInterfaceName(nodeWithInterfaces, 1);
+name = GetInterfaceName(preCreatedNode, 1);
 assert(name == interfaceName2);
 
-interface = GetInterfaceObject(nodeWithInterfaces, 0); 
+interface = GetInterfaceObject(preCreatedNode, 0); 
 assert(interface->ifIndex == 0); 
 assert(interface->name == interfaceName1); 
 
-assert(interface->expectedState == 0); 
-SetInterfaceExpectedState(i, "IGNORE");
+assert(interface->expectedState == 3); 
+SetInterfaceExpectedState(interface, "IGNORE");
 assert(interface->expectedState == 2); 
 
-interfaces = GetNodeInterfaces(nodeWithInterfaces);
+interfaces = GetNodeInterfaces(preCreatedNode);
 assert(interfaces[0]->ifIndex == 0); 
 assert(interfaces[0]->name == interfaceName1); 
 assert(interfaces[1]->ifIndex == 1); 
@@ -105,13 +107,56 @@ assert(interfaces[1]->name == interfaceName2);
 
 //Parents, children and templates
 parents = GetNodeParents(node);
-println parents[0]->name;
 assert(parents[0]->name == "Infrastructure Services");
 assert(parents[1] == null);
 
-//GetNodeTemplates()
-//GetObjectChildren()
-//GetObjectParents()
+templates = GetNodeTemplates(preCreatedNode);
+assert(templates[0]->name == template->name);
+assert(templates[1] == null);
+
+nodeFound = false;
+preCreatedNodeFound = false;
+for (n : GetObjectChildren(infrastructureService)) 
+{
+   if (n->id == nodeId)
+   {
+   	nodeFound = true;
+   }   
+   if (n->id == preCreatedNodeId)
+   {
+   	preCreatedNodeFound = true;
+   }
+   if (nodeFound && preCreatedNodeFound)
+   {
+      break;
+   }
+}
+assert(nodeFound);
+assert(preCreatedNodeFound);
+
+
+infrastractureServiceFound = false;
+templateFound = false;
+for (n : GetObjectParents(preCreatedNode)) 
+{
+   if (n->id == infrastructureService->id)
+   {
+   	infrastractureServiceFound = true;
+   	break;
+   }   
+   /* check if teplate should be returend as one of parents
+   if (n->id == templateId)
+   {
+   	templateFound = true;
+   }
+   if (infrastractureServiceFound && templateFound)
+   {
+      break;
+   }
+   */
+}
+assert(infrastractureServiceFound);
+//assert(templateFound);
 
 RenameObject(container, "Test2");
 assert(container->name == "Test2");

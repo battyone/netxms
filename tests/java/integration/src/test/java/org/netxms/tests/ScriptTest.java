@@ -112,13 +112,15 @@ public class ScriptTest extends AbstractSessionTest implements TextOutputListene
       cd = new NXCObjectCreationData(AbstractObject.OBJECT_INTERFACE, interfaceName1, nodeId);
       cd.setMacAddress(MacAddress.parseMacAddress("00:10:FA:23:11:7A"));
       cd.setIpAddress(new InetAddressEx(InetAddress.getLoopbackAddress(), 0));
+      cd.setIfType(24);
       cd.setIfIndex(0);
       session.createObject(cd);
 
       String interfaceName2 = "eth0";
       cd = new NXCObjectCreationData(AbstractObject.OBJECT_INTERFACE, interfaceName2, nodeId);
       cd.setMacAddress(MacAddress.parseMacAddress("01 02 fa c4 10 dc"));
-      cd.setIpAddress(new InetAddressEx(InetAddress.getByName("192.168.10.1"), 0));
+      cd.setIpAddress(new InetAddressEx(InetAddress.getByName("192.168.10.1"), 24));
+      cd.setIfType(6);
       cd.setIfIndex(1);
       session.createObject(cd);
       
